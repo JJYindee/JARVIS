@@ -7,6 +7,13 @@ import sys
 import traceback
 from pathlib import Path
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 import sounddevice as sd
 from google import genai
 from google.genai import types
@@ -2069,8 +2076,8 @@ def main():
     running_as_app = getattr(sys, "frozen", False)
 
     if os.environ.get("JARVIS_CLI") != "1" and not running_as_app:
-        print("[JARVIS] Please launch with the JARVIS CLI: jarvis")
-        return
+        os.environ["JARVIS_CLI"] = "1"
+        os.environ["JARVIS_SKIP_CLAP_GATE"] = "1"
     if not wait_for_startup_claps():
         return
     print("[JARVIS] ⚡ Powering up the interface...")
