@@ -22,3 +22,20 @@ npm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+*.lnk
+
+# App Config & Memory
+config/api_keys.json
+config/ui_settings.json
+config/layout_settings.json
+memory/long_term.json
+memory/task_history.json
+tmp/
+
+# Python Build & Cache
+*.egg-info/
+build/
+dist/
+
+
+
