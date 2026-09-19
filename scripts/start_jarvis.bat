@@ -30,8 +30,8 @@ goto :deps_done
 
 :install
 echo [start_jarvis] Installing dependencies ^(one-time or requirements changed^)...
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+".venv\Scripts\python.exe" -m pip install --upgrade pip
+".venv\Scripts\python.exe" -m pip install -r requirements.txt
 for /f "usebackq delims=" %%H in (`powershell -NoProfile -Command "(Get-FileHash -Algorithm SHA256 requirements.txt).Hash.ToLower()"`) do (
   echo %%H>.venv\.jarvis_requirements.sha256
 )
@@ -55,5 +55,5 @@ echo [start_jarvis] Starting JARVIS...
 set PYTHONIOENCODING=utf-8
 set JARVIS_CLI=1
 set JARVIS_SKIP_CLAP_GATE=1
-python main.py
+".venv\Scripts\python.exe" main.py
 endlocal

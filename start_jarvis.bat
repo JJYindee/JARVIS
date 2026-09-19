@@ -7,18 +7,19 @@ set PYTHONIOENCODING=utf-8
 set JARVIS_CLI=1
 set JARVIS_SKIP_CLAP_GATE=1
 
-set PYTHON_BIN=python
-where %PYTHON_BIN% >nul 2>nul
+set SYSTEM_PYTHON=python
+where %SYSTEM_PYTHON% >nul 2>nul
 if errorlevel 1 (
-  set PYTHON_BIN=py
+  set SYSTEM_PYTHON=py
 )
 
 if not exist ".venv\Scripts\python.exe" (
   echo [JARVIS] Creating virtual environment in .venv...
-  %PYTHON_BIN% -m venv .venv
+  %SYSTEM_PYTHON% -m venv .venv
+  echo [JARVIS] Installing dependencies...
+  ".venv\Scripts\python.exe" -m pip install --upgrade pip
+  ".venv\Scripts\python.exe" -m pip install -r requirements.txt
 )
-
-call .venv\Scripts\activate.bat
 
 if not exist ".env" (
   if exist ".env.example" (
@@ -28,7 +29,7 @@ if not exist ".env" (
 )
 
 echo [JARVIS] Starting JARVIS UI...
-python main.py
+".venv\Scripts\python.exe" main.py
 if errorlevel 1 (
   echo.
   echo [JARVIS] Error starting program. Press any key to exit.
