@@ -2393,7 +2393,10 @@ class PopupManager(QObject):
     def dismiss_all_popups(self):
         """Dismiss all popups immediately."""
         for popup in self.active_popups[:]:  # Copy list
-            popup._dismiss()
+            try:
+                popup._dismiss()
+            except Exception:
+                pass
         self.active_popups.clear()
 
 
@@ -6342,8 +6345,17 @@ class KeyTutorialOverlay(_OverlayBase):
 
         layout.addLayout(btn_row)
 
-        self._drag_pos = None
-        self._setup_overlay_base(close_callback=self.cancelled.emit)
+class FirstRunIntroOverlay(_OverlayBase):
+    _TOUR_DURATION_S = 90.0
+    _GREETING_DURATION_S = 18.0
+
+    def __init__(self, parent=None, duration_s=90.0, speak=False):
+        super().__init__(parent)
+        self.duration_s = duration_s
+        self.speak = speak
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
 
 
 class VoiceSelectorOverlay(_OverlayBase):
@@ -7227,8 +7239,12 @@ class MainWindow(QMainWindow):
     def _start_auto_graphics_detection(self) -> None:
         """Compatibility hook for deferred capability detection."""
 
+    def _prepare_live_intro_widgets(self, mode="tour"):
+        self._startup_sequence_kind = mode
+
     def __init__(self, face_path: str):
         super().__init__()
+        self._startup_sequence_kind = None
         _load_bundled_fonts()
         self.setWindowTitle("J.A.R.V.I.S — MARK XXXIX")
         self.setMinimumSize(_MIN_W, _MIN_H)
@@ -8025,9 +8041,16 @@ class MainWindow(QMainWindow):
 
     def _update_metrics(self):
         snap = _get_metrics()
+        if hasattr(snap, "snapshot"):
+            snap = snap.snapshot()
+
+        def _val(key, default=0.0):
+            if isinstance(snap, dict):
+                return snap.get(key, default)
+            return getattr(snap, key, default)
 
         # CPU
-        cpu = snap["cpu"]
+        cpu = _val("cpu", 0.0)
         if cpu <= 0:
             try:
                 import psutil as _psu
@@ -8039,7 +8062,7 @@ class MainWindow(QMainWindow):
             self._spark_cpu.set_value("{:.0f}".format(cpu), cpu / 100.0, "%")
 
         # MEM
-        mem = snap["mem"]
+        mem = _val("mem", 0.0)
         if mem <= 0:
             try:
                 import psutil as _psu
@@ -8051,7 +8074,7 @@ class MainWindow(QMainWindow):
             self._spark_mem.set_value("{:.0f}".format(mem), mem / 100.0, "%")
 
         # NET
-        net = snap["net"]
+        net = _val("net", 0.0)
         if net < 1.0:
             net_str = f"{net*1024:.0f}KB/s"
         else:
@@ -9222,12 +9245,13 @@ class MainWindow(QMainWindow):
                     pass
                 break
 
-        # Tool log feeding — forward SYS/tool lines to tool widget
+        # Tool log feeding — forward SYS/tool lines to tool widget (excluding generic lifecycle)
         if any(text.startswith(p) for p in ("SYS:", "ERR:", "FILE:")):
-            try:
-                self._tool_sig.emit(text)
-            except Exception:
-                pass
+            if not (text.startswith("SYS:") and ("online" in text.lower() or "startup" in text.lower())):
+                try:
+                    self._tool_sig.emit(text)
+                except Exception:
+                    pass
         elif "🔧" in text or "📞" in text or "→" in text:
             try:
                 self._tool_sig.emit(text)
@@ -9252,16 +9276,17 @@ class MainWindow(QMainWindow):
         try:
             if API_FILE.exists() and hasattr(self, '_voice_combo'):
                 d = json.loads(API_FILE.read_text(encoding="utf-8"))
-                voice_name = d.get("voice_name", "puck")
+                voice_name = d.get("voice_name", "charon")
                 if isinstance(voice_name, str):
                     voice_name = voice_name.strip().lower()
                 if voice_name not in VOICE_VALUE_TO_LABEL:
-                    voice_name = "puck"
+                    voice_name = "charon"
                 index = self._voice_combo.findData(voice_name)
                 if index >= 0:
                     self._voice_combo.setCurrentIndex(index)
                 else:
-                    self._voice_combo.setCurrentIndex(0)
+                    charon_idx = self._voice_combo.findData("charon")
+                    self._voice_combo.setCurrentIndex(charon_idx if charon_idx >= 0 else 0)
                 os.environ["GEMINI_VOICE_NAME"] = self._get_selected_voice()
         except Exception:
             pass

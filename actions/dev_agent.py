@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import os
 import json
 import re
 import time
@@ -22,8 +23,26 @@ MODEL_PLANNER    = "gemini-2.5-flash"
 MODEL_WRITER     = "gemini-2.5-flash"
 
 def _get_api_key() -> str:
-    with open(API_CONFIG_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)["gemini_api_key"]
+    try:
+        from memory.config_manager import get_gemini_key
+        key = get_gemini_key()
+        if key:
+            return key
+    except Exception:
+        pass
+    env_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if env_key:
+        return env_key
+    try:
+        if API_CONFIG_PATH.exists():
+            data = json.loads(API_CONFIG_PATH.read_text(encoding="utf-8"))
+            key = data.get("gemini_api_key") or data.get("GEMINI_API_KEY")
+            if key:
+                return key
+    except Exception:
+        pass
+    raise ValueError("Gemini API key is not configured. Set GEMINI_API_KEY or save it in UI settings.")
+
 
 
 def _get_model(model_name: str):

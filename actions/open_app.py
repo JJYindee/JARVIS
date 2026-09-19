@@ -14,7 +14,7 @@ _SYSTEM = platform.system()
 _APP_ALIASES: dict[str, dict[str, str]] = {
 
     "chrome":             {"Windows": "chrome",                  "Darwin": "Google Chrome",        "Linux": "google-chrome"},
-    "google chrome":      {"Windows": "chrome",                  "Darwin": "Google Chrome",        "Linux": "google-chrome"},
+    "google chrome":      {"Windows": "Google Chrome",           "Darwin": "Google Chrome",        "Linux": "google-chrome"},
     "firefox":            {"Windows": "firefox",                 "Darwin": "Firefox",              "Linux": "firefox"},
     "edge":               {"Windows": "msedge",                  "Darwin": "Microsoft Edge",       "Linux": "microsoft-edge"},
     "brave":              {"Windows": "brave",                   "Darwin": "Brave Browser",        "Linux": "brave-browser"},
@@ -67,15 +67,21 @@ _APP_ALIASES: dict[str, dict[str, str]] = {
 
 def _normalize(raw: str) -> str:
     key = raw.lower().strip()
+    noise_prefixes = ["please open ", "open ", "launch ", "start "]
+    for prefix in noise_prefixes:
+        if key.startswith(prefix):
+            key = key[len(prefix):].strip()
 
     if key in _APP_ALIASES:
         return _APP_ALIASES[key].get(_SYSTEM, raw)
 
-    for alias_key, os_map in _APP_ALIASES.items():
+    for alias_key in sorted(_APP_ALIASES.keys(), key=len, reverse=True):
+        os_map = _APP_ALIASES[alias_key]
         if alias_key in key or key in alias_key:
             return os_map.get(_SYSTEM, raw)
 
-    return raw  
+    return raw
+  
 
 def _launch_windows(app_name: str) -> bool:
 

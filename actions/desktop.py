@@ -26,9 +26,27 @@ def _get_base_dir() -> Path:
     return Path(__file__).resolve().parent.parent
 
 def _get_api_key() -> str:
-    path = _get_base_dir() / "config" / "api_keys.json"
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)["gemini_api_key"]
+    try:
+        from memory.config_manager import get_gemini_key
+        key = get_gemini_key()
+        if key:
+            return key
+    except Exception:
+        pass
+    env_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if env_key:
+        return env_key
+    try:
+        path = _get_base_dir() / "config" / "api_keys.json"
+        if path.exists():
+            data = json.loads(path.read_text(encoding="utf-8"))
+            key = data.get("gemini_api_key") or data.get("GEMINI_API_KEY")
+            if key:
+                return key
+    except Exception:
+        pass
+    raise ValueError("Gemini API key is not configured. Set GEMINI_API_KEY or save it in UI settings.")
+
     
 def _get_desktop() -> Path:
     if _OS == "Linux":

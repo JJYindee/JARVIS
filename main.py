@@ -94,7 +94,7 @@ SUPPORTED_VOICE_NAMES = {
     "puck", "charon", "kore", "fenrir", "aoede",
     "leda", "orus", "schedar", "zubenelgenubi"
 }
-DEFAULT_VOICE_NAME   = "puck"
+DEFAULT_VOICE_NAME   = "charon"
 
 RECEIVE_SAMPLE_RATE = 24000
 CHUNK_SIZE          = 1024
