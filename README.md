@@ -26,7 +26,7 @@ cd JARVIS
 python scripts/setup_jarvis.py
 ```
 
-> **สำหรับ Windows**: คุณสามารถดับเบิลคลิกที่ไฟล์ [`scripts/setup_jarvis.bat`](file:///c:/Users/USER/Desktop/JARVIS-OS-V.2-main/scripts/setup_jarvis.bat) หรือ [`scripts/start_jarvis.bat`](file:///c:/Users/USER/Desktop/JARVIS-OS-V.2-main/scripts/start_jarvis.bat) เพื่อตั้งค่าและเปิดใช้งานได้ทันที
+> **สำหรับ Windows**: คุณสามารถดับเบิลคลิกที่ไฟล์ [`setup_jarvis.bat`](file:///c:/Users/USER/Desktop/JARVIS/setup_jarvis.bat) หรือ [`start_jarvis.bat`](file:///c:/Users/USER/Desktop/JARVIS/start_jarvis.bat) เพื่อตั้งค่าและเปิดใช้งานได้ทันที
 
 เปิดไฟล์ `.env` เพื่อกรอก `GEMINI_API_KEY` ของคุณ (หรือกรอกและกดบันทึกผ่านการ์ดเปลี่ยน API Key ในหน้าจอ UI ได้โดยตรง) จากนั้นเปิดใช้งาน JARVIS:
 
