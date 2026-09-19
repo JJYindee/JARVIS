@@ -21,8 +21,8 @@ python --version
 เปิด Terminal หรือ Command Prompt แล้วรันคำสั่ง:
 
 ```bash
-git clone https://github.com/MAL19INDUSTRIES/JARVIS-OS-V.2.git
-cd JARVIS-OS-V.2
+git clone https://github.com/JJYindee/JARVIS.git
+cd JARVIS
 python scripts/setup_jarvis.py
 ```
 
@@ -98,6 +98,13 @@ jarvis --self-test
 - [บทเรียนเริ่มต้นใช้งาน (Tutorial)](docs/TUTORIAL.md)
 - [คู่มือการตรวจสอบบั๊กและ QA Audit](docs/QA.md)
 - [แนวทางการร่วมพัฒนา (Contribution Notes)](CONTRIBUTING.md)
+
+---
+
+## 🙏 เครดิตและขอบคุณ (Credits & Acknowledgments)
+
+โปรเจกต์นี้ได้รับการพัฒนาต่อยอดมาจากผลงานของ **[MAL19INDUSTRIES](https://github.com/MAL19INDUSTRIES)** 🙏
+ขอขอบคุณ [MAL19INDUSTRIES/JARVIS-OS-V.2](https://github.com/MAL19INDUSTRIES/JARVIS-OS-V.2) สำหรับซอร์สโค้ดต้นฉบับ สถาปัตยกรรม และแรงบันดาลใจในการสร้างสรรค์ระบบผู้ช่วย AI ประจำเครื่องชุดนี้
 
 ---
 
